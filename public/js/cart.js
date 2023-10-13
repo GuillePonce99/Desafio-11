@@ -24,10 +24,9 @@ const purchase = async () => {
             body: JSON.stringify({ code })
         })
 
-        console.log(response);
         if (response.ok) {
             const data = await response.json()
-            console.log(data);
+
             if (data.ids.length > 0) {
                 Toastify({
                     text: `Algunos productos no estan disponibles`,

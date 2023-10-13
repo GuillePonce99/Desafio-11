@@ -5,14 +5,16 @@ import { generateProductErrorInfo } from "../../../services/errors/info.js";
 
 export default class Products {
     constructor() { }
-    getProductById = async (pid, res) => {
+    getProductById = async (pid, req, res) => {
 
         try {
             const product = await ProductModel.findOne({ code: pid })
             if (!product) {
+                req.logger.error(`Error al obtener el producto code ${pid}: No se encontro en la base de datos!`)
                 return res.status(404).json({ message: "Not Found" });
             }
             const result = await ProductModel.findOne({ code: pid });
+            req.logger.info(`Se ha obtenido el producto ${result.title} - DATE:${new Date().toLocaleTimeString()}`)
             res.status(200).json({ message: "success", result })
         }
         catch (error) {
@@ -20,11 +22,12 @@ export default class Products {
         }
 
     }
-    addProduct = async (product, res) => {
+    addProduct = async (product, req, res) => {
 
         const { id, title, description, code, price, stock, status, category, thumbnails } = product
 
         if (!title || !description || !code || !price || !category) {
+            req.logger.error(`Error al agregar el producto: faltan datos!`)
             CustomError.createError({
                 name: "Error al agregar el producto",
                 cause: generateProductErrorInfo(product),
@@ -35,12 +38,14 @@ export default class Products {
         }
 
         if (id) {
+            req.logger.error(`Error al agregar el producto: no debe incluir ID!`)
             return res.status(401).json({ message: "No incluir ID" });
         }
 
         const repetedCode = await ProductModel.findOne({ "code": code })
 
         if (repetedCode) {
+            req.logger.error(`Error al agregar el producto: ya existe el producto con el code: ${code}`)
             CustomError.createError({
                 name: "Error al agregar el producto",
                 cause: generateProductErrorInfo(product),
@@ -65,18 +70,21 @@ export default class Products {
 
             const result = await ProductModel.create(product)
 
+            req.logger.info(`Se ha agregado el producto ${result.title} - DATE:${new Date().toLocaleTimeString()}`)
+
             res.status(200).json({ message: "success", result })
         }
         catch (error) {
-            //console.log("1- ", error);
+            res.status(500).send(error)
         }
     }
-    deleteProduct = async (pid, res) => {
+    deleteProduct = async (pid, req, res) => {
 
         try {
             const product = await ProductModel.findOne({ code: pid })
 
             if (!product) {
+                req.logger.error(`Error al eliminar el producto code ${pid}: No se encontro en la base de datos!`)
                 CustomError.createError({
                     name: "Error al eliminar el producto",
                     cause: generateProductErrorInfo(product),
@@ -88,19 +96,22 @@ export default class Products {
 
             const result = await ProductModel.findOneAndDelete({ code: pid })
 
+            req.logger.info(`Se ha eliminado el producto ${result.title} - DATE:${new Date().toLocaleTimeString()}`)
+
             res.status(200).json({ message: "success", result })
         }
         catch (error) {
             res.status(500).send(error)
         }
     }
-    updateProduct = async (pid, body, res) => {
-
+    updateProduct = async (pid, req, res) => {
+        let body = req.body
 
         try {
             const product = await ProductModel.findOne({ _id: pid })
 
             if (!product) {
+                req.logger.error(`Error al actualizar el producto code: ${pid}: No se encontro en la base de datos!`)
                 CustomError.createError({
                     name: "Error al actualizar el producto",
                     cause: generateProductErrorInfo(product),
@@ -113,6 +124,7 @@ export default class Products {
             const repetedCode = await ProductModel.findOne({ "code": body.code })
 
             if (repetedCode) {
+                req.logger.error(`Error al actualizar el producto code ${pid}: Ya existe un producto con este code!`)
                 CustomError.createError({
                     name: "Error al actualizar el producto",
                     cause: generateProductErrorInfo(product),
@@ -123,6 +135,8 @@ export default class Products {
             }
 
             const actualizado = await ProductModel.findOneAndUpdate({ _id: pid }, body, { new: true })
+
+            req.logger.info(`Se ha actualizado el producto ${actualizado.title} - DATE:${new Date().toLocaleTimeString()}`)
 
             res.status(200).json({ message: "success", data: actualizado })
 
@@ -158,6 +172,7 @@ export default class Products {
 
             }
 
+            req.logger.info(`Se ha obtenido un listado de todos los productos - DATE:${new Date().toLocaleTimeString()}`)
             res.status(200).json({ message: "success", response })
 
         }
@@ -219,6 +234,7 @@ export default class Products {
                 nextLink: result.hasNextPage ? `/products?limit=${options.limit}&page=${result.nextPage}&sort=${req.query.sort}${query ? `&query=${queryFormated}` : ""}` : null
             }
 
+            req.logger.info(`Se ha obtenido un listado de todos los productos - DATE:${new Date().toLocaleTimeString()}`)
             return response
         }
         catch (error) {

@@ -1,7 +1,7 @@
 const btnAddCart = document.querySelectorAll(".btn-addToCart")
 const profile = document.getElementById("ul-profile")
 const actions = document.getElementById("actions")
-console.log();
+
 //Funcion que una vez generado el perfil, podre cerrar sesion mediante su respectivo boton
 const logOut = async () => {
 
@@ -70,7 +70,6 @@ const saludo = () => {
 //Funcion para obtener del LS el Id el carrito
 const getCartId = async () => {
     if (profile.dataset.admin !== "true") {
-        console.log("entro");
         const response = await fetch("/api/carts/user/cart")
 
         if (response.ok) {
@@ -201,7 +200,6 @@ btnAddCart.forEach(btn => {
 
             cart = await getCartId()
             cartId = cart.cartId
-            //console.log(cartId, productId);
 
             await fetch(`/api/carts/${cartId}/product/${productId}`, {
 
@@ -280,7 +278,6 @@ if (actions) {
         })
 
         if (response.ok) {
-            console.log(await response.json());
             Toastify({
                 text: `Agregado exitosamente!`,
                 duration: 3000,
@@ -299,7 +296,6 @@ if (actions) {
             }, 3000)
         } else {
             const error = await response.json()
-            console.log(error);
             actionAdd.innerHTML = `${error.name}`
             setTimeout(() => {
                 actionAdd.innerHTML = "";
@@ -336,7 +332,6 @@ if (actions) {
             }, 3000)
         } else {
             const error = await response.json()
-            console.log(error);
             actionDelete.innerHTML = `${error.name}`
             setTimeout(() => {
                 actionDelete.innerHTML = "";

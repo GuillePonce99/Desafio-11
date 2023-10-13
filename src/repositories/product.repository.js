@@ -11,19 +11,19 @@ export default class ProductRepository {
     }
     getProductById = async (req, res) => {
         const { pid } = req.params
-        return await this.dao.getProductById(pid, res)
+        return await this.dao.getProductById(pid, req, res)
     }
     addProduct = async (req, res) => {
         let product = new ProductDTO(req.body)
-        return await this.dao.addProduct(product, res)
+        return await this.dao.addProduct(product, req, res)
     }
     deleteProduct = async (req, res) => {
         const { pid } = req.params
-        return await this.dao.deleteProduct(pid, res)
+        return await this.dao.deleteProduct(pid, req, res)
     }
     updateProduct = async (req, res) => {
         const { pid } = req.params
-        return await this.dao.updateProduct(pid, req.body, res)
+        return await this.dao.updateProduct(pid, req, res)
     }
     getProductsView = async (req, res) => {
         let { limit = 10, page = 1, sort, query } = req.query

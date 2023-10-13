@@ -1,34 +1,28 @@
-import { signupDTO, userDTO } from "../dao/DTOs/session.dto.js"
 export default class SessionRepository {
     constructor(dao) {
         this.dao = dao
     }
     login = async (req, res) => {
-        const { email, password } = req.body
-        return await this.dao.login(email, password, res)
+        return await this.dao.login(req, res)
     }
 
     loginGitHub = async (req, res) => {
-        const user = req.user
-        return await this.dao.loginGitHub(user, res)
+        return await this.dao.loginGitHub(req, res)
     }
 
     signup = async (req, res) => {
-        let user = new signupDTO(req.body)
-        return await this.dao.signup(user, res)
+        return await this.dao.signup(req, res)
     }
 
     forgot = async (req, res) => {
-        const { email, newPassword } = req.body
-        return await this.dao.forgot(email, newPassword, res)
+        return await this.dao.forgot(req, res)
     }
 
     logout = async (req, res) => {
-        return await this.dao.logout(res)
+        return await this.dao.logout(req, res)
     }
 
     current = async (req, res) => {
-        const user = new userDTO(req.user)
-        return await this.dao.current(user, res)
+        return await this.dao.current(req, res)
     }
 }

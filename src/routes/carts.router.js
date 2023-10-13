@@ -5,7 +5,7 @@ export default class CartsRouter extends Routes {
     init() {
         this.get("/", ["USER", "USER_PREMIUM", "ADMIN"], getCarts)
 
-        this.get("/:cid", ["USER", "USER_PREMIUM", "ADMIN"], getCartById)
+        this.get("/:cid", ["PUBLIC"], getCartById)
 
         this.post("/", ["USER", "USER_PREMIUM", "ADMIN"], addCart)
 

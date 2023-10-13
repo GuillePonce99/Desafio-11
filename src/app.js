@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser"
 import Config from "./config/config.js"
 //import compression from "express-compression"
 import errorHandler from "./middlewares/errors/index.js"
+import { addLoger, logger } from "./config/logger.js"
+
 
 import CartsRouter from "./routes/carts.router.js"
 import ProductsRouter from "./routes/products.router.js"
@@ -23,13 +25,17 @@ const app = express()
 const environment = async () => {
     await mongoose.connect(`mongodb+srv://${Config.MONGO_USER}:${Config.MONGO_PASSWORD}@coder.amwd2xp.mongodb.net/${Config.MONGO_DB}`)
         .then(() => {
-            console.log("DB IS CONNECTED");
+            logger.info("DB IS CONNECTED");
+            logger.info(`ENTORNO: ${Config.ENVIRONMENT}`);
         })
         .catch((error) => {
             console.log(error);
             process.exit(4)
         })
 }
+
+
+
 
 //CONFIG
 app.use(express.static("public"))
@@ -38,6 +44,7 @@ app.use(express.json());
 app.use(cookieParser())
 initializePassport()
 app.use(passport.initialize())
+app.use(addLoger)
 
 //HANDLEBARS
 
@@ -68,8 +75,17 @@ app.use(errorHandler)
 //MOCKING
 app.get("/mockingproducts", mockingProduct)
 
-//RENDER PARA TODAS LAS PAGINAS QUE NO EXISTAN
+//EJEMPLO LOGGER
+app.get("/loggerTest", (req, res) => {
+    req.logger.fatal("CRITICAL!!")
+    req.logger.error("ERROR!!")
+    req.logger.warning("Alerta!!")
+    req.logger.info("INFO!")
+    req.logger.debug("DEBUG")
+    res.send({ message: "Prueba de logger" })
+})
 
+//RENDER PARA TODAS LAS PAGINAS QUE NO EXISTAN
 app.use("*", (req, res) => {
     res.render("404", { style: "error.css" })
 })
@@ -78,17 +94,17 @@ app.use("*", (req, res) => {
 //EVENTOS EN CASO DE QUE UN PROCESO FINALIZE CON UN proccess.exit, Y OTRO EVENTO PARA ATRAPAR ERRORES INESPERADO
 
 process.on("exit", code => {
-    console.log(`Proceso finalizado con codigo: ${code}`);
+    logger.info(`Proceso finalizado con codigo: ${code}`)
 })
 
 process.on("uncaughtExeption", exception => {
-    console.log(`ERROR INESPERADO: ${exception}`);
+    logger.error(`ERROR INESPERADO: ${exception}`);
 })
 
 //SOCKET IO
 
 const httpServer = app.listen(Config.PORT, () => {
-    console.log(`Servidor corriendo en puerto ${Config.PORT}`);
+    logger.info(`Servidor corriendo en puerto ${Config.PORT}`);
 })
 
 const io = new Server(httpServer)
@@ -96,3 +112,4 @@ socket(io)
 
 // CORRIENDO DB
 environment()
+

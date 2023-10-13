@@ -11,14 +11,12 @@ const signup = async (firstName, lastName, age, email, password) => {
         body: JSON.stringify({ firstName, lastName, age, email, password }),
     })
 
-    console.log(response);
     if (response.ok) {
-        console.log(await response.json());
         return true
     } else {
         const data = await response.json()
         console.log(data);
-        return data.message
+        return data.name
     }
 }
 
@@ -33,11 +31,11 @@ const login = async (email, password) => {
     })
 
     if (response.ok) {
-        console.log(await response.json());
         return true
     } else {
         const data = await response.json()
-        return data.message
+        console.log(data);
+        return data.name
     }
 }
 
@@ -52,12 +50,10 @@ const forgot = async (email, newPassword) => {
         })
 
         if (response.ok) {
-            console.log(await response.json());
             return true
         } else {
             const data = await response.json()
-            console.log(data.error.message);
-            return data.message
+            return data.name
         }
 
     }
@@ -97,6 +93,7 @@ if (btnSignup) {
             setTimeout(() => {
                 window.location.href = `/`;
             }, 2000)
+
 
 
         } else {

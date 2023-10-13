@@ -13,7 +13,7 @@ export default class SessionRouter extends Routes {
         this.put("/forgot", ["PUBLIC"], forgot)
 
         //Ruta para eliminar la sesion actual
-        this.get("/logout", ["PUBLIC"], logout)
+        this.get("/logout", ["USER", "USER_PREMIUM", "ADMIN"], logout)
 
         //Ruta para obtener el token del request
         this.get("/current", ["USER", "USER_PREMIUM", "ADMIN"], passportCall("jwt"), current)

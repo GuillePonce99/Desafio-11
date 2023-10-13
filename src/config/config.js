@@ -1,14 +1,25 @@
 import dotenv from "dotenv"
 import { options } from "./commander.js";
 
-const environment = "PRODUCTION"
-
+const environment = options.environment
+let pathEnv
+switch (environment) {
+    case "DEV":
+        pathEnv = "./.env.dev"
+        break
+    case "PROD":
+        pathEnv = "./.env.prod"
+        break
+    case "PRODUCTION":
+        pathEnv = "./.env.prod"
+        break
+}
 dotenv.config({
-    path: environment === "PRODUCTION" ? "./.env.prod" : "./.env.dev"
+    path: pathEnv
 })
 
 export default {
-    PORT: process.env.PORT,
+    PORT: options.port || process.env.PORT,
     MONGO_DB: process.env.MONGO_DB,
     MONGO_URI: process.env.MONGO_URI,
     MONGO_USER: process.env.MONGO_USER,
@@ -19,5 +30,7 @@ export default {
     COOKIE_KEY: process.env.COOKIE_KEY,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
-    PERSISTENCE: options.Persistence
+    PERSISTENCE: options.persistence,
+    ENVIRONMENT: environment
 }
+

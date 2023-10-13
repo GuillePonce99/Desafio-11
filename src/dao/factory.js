@@ -1,4 +1,5 @@
 import Config from "../config/config.js";
+import { logger } from "../config/logger.js";
 export let Products
 export let Carts
 export let Sessions
@@ -6,7 +7,7 @@ export let Tickets
 
 switch (Config.PERSISTENCE) {
     case "MONGO":
-        console.log("PERSISTENCIA: ", Config.PERSISTENCE);
+        logger.info(`PERSISTENCIA: ${Config.PERSISTENCE}`);
         const { default: ProductMongo } = await import("./mongo/services/products.js")
         const { default: CartsMongo } = await import("./mongo/services/carts.js")
         const { default: SessionsMongo } = await import("./mongo/services/sessions.js")
@@ -18,7 +19,7 @@ switch (Config.PERSISTENCE) {
         break;
 
     case "MEMORY":
-        console.log("PERSISTENCIA: ", Config.PERSISTENCE);
+        logger.info(`PERSISTENCIA: ${Config.PERSISTENCE}`);
         const { default: ProductMemory } = await import("./memory/services/products.js")
         const { default: CartsMemory } = await import("./memory/services/carts.js")
         const { default: SessionsMemory } = await import("./mongo/services/sessions.js")
